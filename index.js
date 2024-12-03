@@ -7,15 +7,15 @@ const mongoose = require('mongoose')
 const password = process.argv[2]
 
 // DO NOT SAVE YOUR PASSWORD TO GITHUB!!
-const url =
-  `mongodb+srv://fullstack:${password}@cluster0.o1opl.mongodb.net/?retryWrites=true&w=majority`
+const url = process.env.MONGODB_URI;
+console.log('connecting to', url)
 
-mongoose.set('strictQuery',false)
+mongoose.set('strictQuery', false)
 mongoose.connect(url)
 
 const noteSchema = new mongoose.Schema({
-  content: String,
-  important: Boolean,
+    content: String,
+    important: Boolean,
 })
 
 const Note = mongoose.model('Note', noteSchema)
@@ -60,7 +60,9 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+        response.json(notes)
+    })
 })
 
 app.get('/api/notes/:id', (request, response) => {
